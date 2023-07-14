@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+    Layout = "_Layout";
 }
 
 <form>
@@ -16,17 +17,18 @@
         </div>
     </div>
     <div class="form-group row">
-        <label for="inputPassword" class="col-sm-2 col-form-label">Họ Và Tên</label>
+        <label class="col-sm-2 col-form-label">Họ Và Tên</label>
         <div class="col-sm-10">
             <input type="text" class="form-control" id="inputName" placeholder="Họ Và Tên">
         </div>
     </div>
     <div class="form-group row">
-        <label for="inputPassword" class="col-sm-2 col-form-label">Bảng Thi</label>
+        <label class="col-sm-2 col-form-label">Bảng Thi</label>
         <div class="col-sm-10">
-            <select class="form-select" aria-label="Default select example" id="city">
-                aria-label=".form-select-sm">
+            <select class="form-select" aria-label="Default select example" id="bangthi">
                 <option>--- Chọn Bảng Thi ---</option>
+                <option value="HS">Học Sinh</option>
+                <option value="SV">Sinh Viên</option>
             </select>
          </div>
         
@@ -34,9 +36,12 @@
     <div class="form-group row">
         <label for="inputPassword" class="col-sm-2 col-form-label">Khu Vực</label>
         <div class="col-sm-10">
-            <select class="form-select" aria-label="Default select example" id="city">
-                aria-label=".form-select-sm">
+            <select class="form-select" aria-label="Default select example" id="area">
                 <option>--- Chọn Khu Vực ---</option>
+                <option value="1">Miền Bắc</option>
+                <option value="2">Miền Trung</option>
+                <option value="3">Miền Nam</option>
+                <option value="4">Cụm Đoàn Trực Thuộc Trung Ương</option>
             </select>
         </div>
 
@@ -45,18 +50,15 @@
         <label for="inputPassword" class="col-sm-2 col-form-label">Thành Phố</label>
         <div class="col-sm-10">
             <select class="form-select" aria-label="Default select example" id="city">
-                aria-label=".form-select-sm">
                 <option>--- Chọn Tỉnh/Thành Phố/Khu Vực ---</option>
             </select>
         </div>
-
     </div>
     <div class="form-group row">
         <label for="inputPassword" class="col-sm-2 col-form-label">Quận Huyện</label>
         <div class="col-sm-10">
-            <select class="form-select" aria-label="Default select example" id="city">
-                aria-label=".form-select-sm">
-                <option>--- Chọn Quận/Huyện ---</option>
+            <select class="form-select" aria-label="Default select example" id="district">
+                <option value="-1">---Chọn Quận/Huyện---</option>
             </select>
         </div>
 
@@ -64,9 +66,8 @@
     <div class="form-group row">
         <label for="inputPassword" class="col-sm-2 col-form-label">Trường</label>
         <div class="col-sm-10">
-            <select class="form-select" aria-label="Default select example" id="city">
-                aria-label=".form-select-sm">
-                <option>--- Chọn Trường ---</option>
+            <select class="form-select" aria-label="Default select example" id="school">
+                <option value="-1">--- Chọn Trường ---</option>
             </select>
         </div>
     </div>
@@ -84,3 +85,97 @@
     </div>
     <button type="button" class="btn btn-primary">Xác Nhận</button>
 </form>
+
+@section Scripts 
+{
+    <script>
+        $(document).ready(function () {
+            let defaultValue = 0;
+            let schoolType = $("#bangthi").val()
+            let areaId = 0;
+            let cityId = 0;
+            let districtId = 0;
+            GetDistrictsByCityId(defaultValue);
+            GetSchoolsByCityIdSchoolType(defaultValue, defaultValue, schoolType);
+            $("#area").on('change', function () {
+                areaId = $(this).val();
+                GetCitiesByAreaId(areaId);
+            });
+
+            $("#city").on('change', function () {
+                cityId = $(this).val();
+                GetDistrictsByCityId(cityId);
+
+            });
+
+            $("#district").on('change', function () {
+                districtId = $(this).val();
+                GetSchoolsByCityIdSchoolType(cityId, districtId, schoolType);
+            });
+            $("#bangthi").on('change', function () {
+                schoolType = $("#bangthi").val()
+                GetSchoolsByCityIdSchoolType(cityId, districtId, schoolType);
+            });
+        });
+
+        function GetCitiesByAreaId(areaId) {
+            $.ajax({
+                type: "GET",
+                url: "/update/cities/" + areaId,
+                data: "{}",
+                success: function (response) {
+                    var s = '<option>--- Chọn Tỉnh / Thành Phố / Khu Vực-- - </option>';            
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].Id + '">' + response[i].Name + '</option>';
+                    }
+                    $("#city").html(s);
+                },
+                error: function (response, status, error) {
+                    var defaultValue = '<option>--- Chọn Tỉnh / Thành Phố / Khu Vực-- - </option>';
+                    $("#city").html(defaultValue);
+                }
+            });
+        }
+
+        function GetDistrictsByCityId(cityId) {
+            $.ajax({
+                type: "GET",
+                url: "/update/districts/" + cityId,
+                data: "{}",
+                success: function (response) {
+                    var s = '<option value="-1">---Chọn Quận/Huyện---</option>';
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].Id + '">' + response[i].Name + '</option>';
+                    }
+                    $("#district").html(s);
+                },
+                error: function (response, status, error) {
+                    var defaultValue = '<option value="-1">---Quận/Huyện ---</option>';
+                    $("#district").html(defaultValue);
+                }
+            });
+        }
+
+        function GetSchoolsByCityIdSchoolType(cityId, districtId, schoolType) {
+            $.ajax({
+                type: "GET",
+                url: "schools" + "?schoolType=" + schoolType + "&cityId=" + cityId + "&districtId=" + districtId,
+                data: "{}",
+                success: function (response) {
+                    var s = '<option value="-1">--- Chọn Trường ---</option>';
+                    for (var i = 0; i < response.length; i++) {
+                        s += '<option value="' + response[i].Id + '">' + response[i].Name + '</option>';
+                    }
+                    $("#school").html(s);
+                },
+                error: function (response, status, error) {
+                    var defaultValue = '<option value="-1">--- Chọn Trường ---</option>';
+                    $("#school").html(defaultValue);
+                }
+            });
+        }
+    </script>
+}
+
+
+

@@ -7,6 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UpdateWeb.Domain.Services;
+using UpdateWeb.Infrastructure.Repositories;
+using UpdateWeb.Infrastructure.SQL;
 
 namespace Update.Web
 {
@@ -22,7 +25,15 @@ namespace Update.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().
+                     AddJsonOptions(options =>
+                        {
+                            options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                            options.JsonSerializerOptions.PropertyNamingPolicy = null;
+                        });
+            services.AddSingleton<ISQLprovider, SQLprovider>();
+            services.AddSingleton<ICityServices, CityServices>();
+            services.AddSingleton<ICityRepositories, CityRepositories>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +48,7 @@ namespace Update.Web
                 app.UseExceptionHandler("/Home/Error");
             }
             app.UseStaticFiles();
+            
 
             app.UseRouting();
 
@@ -46,7 +58,7 @@ namespace Update.Web
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Search}/{action=Search}/{id?}");
             });
         }
     }
