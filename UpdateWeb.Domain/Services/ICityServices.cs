@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.SqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,9 @@ namespace UpdateWeb.Domain.Services
         public List<CityItemViewModel> GetCityById(int areaId);
         public List<DistrictItemViewModel> GetDistrictByCityId(int cityId);
         public List<SchoolItemViewModel> GetSchoolByCityIdSchoolType(int cityId, int? districtId, string schoolType);
+        public CityItemViewModel GetCityByCityId(int cityId);
+        public DistrictItemViewModel GetDistrictById(int districtId);
+        public SchoolItemViewModel GetSchoolById(int schoolId);
+        
     }
 }

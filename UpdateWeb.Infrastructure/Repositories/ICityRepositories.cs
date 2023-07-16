@@ -9,8 +9,11 @@ namespace UpdateWeb.Infrastructure.Repositories
 {
     public interface ICityRepositories
     {
-        public List<City> GetCityById(int areaId);
+        public List<City> GetCityByAreaId(int areaId);
         public List<District> GetDistrictByCityId(int cityId);
         public List<School> GetSchoolByCityIdSchoolType(int cityId, int? districtId, string schoolType);
+        public City GetCityByCityId(int cityId);
+        public District GetDistrictById(int districtId);
+        public School GetSchoolById(int schoolId);
     }
 }

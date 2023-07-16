@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Search";
+    Layout = "_Layout";
+}
+
+
+<div class="container">
+
+    <div class="row height d-flex justify-content-center align-items-center">
+        <div class="col-md-8">        
+                <div class="search">
+                    <i class="fa fa-search"></i>
+                    <form>
+                    <input type="text" name="mobile" title="Nhập vào kí tự số"
+                        class="form-control phone-number" id="input_phone" placeholder="Nhập Số Điện Thoại Cần Tìm" required>
+                    <button type="button" class="btn btn-primary search_button" onclick="searchUserByPhone()">Tìm Kiếm</button>
+                    </form>
+                </div>
+                <div class="row user-information" style="display:flex; margin-top:50px">
+
+                </div>
+            <partial name="_Alert" />
+            <a href="/detail/" class="btn btn-primary detail-view" style="visibility:hidden">
+                    Xem Chi Tiết
+            </a>
+                    
+        </div>
+
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <script src="~/js/search.js"></script>
+}

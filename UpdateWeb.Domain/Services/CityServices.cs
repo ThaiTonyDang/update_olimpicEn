@@ -19,7 +19,7 @@ namespace UpdateWeb.Domain.Services
 
         public List<CityItemViewModel> GetCityById(int areaId)
         {
-            var cities = _cityRepositories.GetCityById(areaId);
+            var cities = _cityRepositories.GetCityByAreaId(areaId);
             var cityItems = cities.Select(c => new CityItemViewModel
             {
                 Id = c.Id,
@@ -58,6 +58,48 @@ namespace UpdateWeb.Domain.Services
             }).ToList();
 
             return schoolItems;
+        }
+
+        public CityItemViewModel GetCityByCityId(int cityId)
+        {
+            var city = _cityRepositories.GetCityByCityId(cityId);
+            var cityItem = new CityItemViewModel()
+            {
+                Id = city.Id,
+                AreaId = city.AreaId,
+                AreaName = city.AreaName,
+                Name = city.Name,
+            };
+
+            return cityItem;
+        }
+
+        public DistrictItemViewModel GetDistrictById(int districtId)
+        {
+            var district = _cityRepositories.GetDistrictById(districtId);
+            var districtItem = new DistrictItemViewModel()
+            {
+                Id = district.Id,
+                CityId = district.CityId,
+                Name = district.Name,
+            };
+
+            return districtItem;
+        }
+
+        public SchoolItemViewModel GetSchoolById(int schoolId)
+        {
+            var school = _cityRepositories.GetSchoolById(schoolId);
+            var schoolItem = new SchoolItemViewModel()
+            {
+                Id = school.Id,
+                CityId = school.CityId,
+                DistrictId = school.DistrictId,
+                Name = school.Name,
+                SchoolType = school.SchoolType
+            };
+
+            return schoolItem;
         }
     }
 }
