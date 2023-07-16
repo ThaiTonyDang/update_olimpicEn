@@ -31,9 +31,11 @@ namespace Update.Web
                             options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                             options.JsonSerializerOptions.PropertyNamingPolicy = null;
                         });
-            services.AddSingleton<ISQLprovider, SQLprovider>();
-            services.AddSingleton<ICityServices, CityServices>();
-            services.AddSingleton<ICityRepositories, CityRepositories>();
+            services.AddScoped<ISQLprovider, SQLprovider>();
+            services.AddScoped<ICityServices, CityServices>();
+            services.AddScoped<ICityRepositories, CityRepositories>();
+            services.AddScoped<IUserRepositories, UserRepositories>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

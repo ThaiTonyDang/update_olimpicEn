@@ -1,0 +1,99 @@
+﻿@using UpdateWeb.Infrastructure.Const
+@{
+    var mode = TempData[Mode.MODE] as string;
+    var modalFail = TempData[Mode.MODAL_CONFIRM_FAIL] as string;   
+    var modalSuccess = TempData[Mode.MODAL_CONFIRM_SUCCESS] as string;
+    var labelSuccess = TempData[Mode.LABEL_CONFIRM_SUCCESS] as string;
+    var labelFail = TempData[Mode.LABEL_CONFIRM_FAIL] as  string;
+    var labelCheck= TempData[Mode.LABEL_CONFIRM_CHECK] as  string;
+    var modalConfirm = TempData[Mode.MODAL_CONFIRM] as string;
+}
+ 
+@if (mode == Mode.USING_MODAL_CONFIRM)
+{
+    <div class="modal fade show" id="confirm-modal"
+    tabindex="-1" role="dialog"
+    aria-labelledby="exampleModalCenterTitle"
+    style="display: block; padding-right: 15px;"
+    aria-modal="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center font-18">
+                    @if (!string.IsNullOrEmpty(modalSuccess))
+                    {
+                        <h3 class="mb-20" style="color:blue">@modalSuccess</h3>
+                        <div class="mb-30 text-center">
+                            <img src="~/img/success.png">
+                        </div>
+                        <p>CONGRATULATUON !</p>
+                    }
+                    @if (!string.IsNullOrEmpty(modalFail))
+                    {
+                        <h3 class="mb-20" style="color:red">@modalFail</h3>
+                        <div class="mb-30 text-center">
+                            <img src="~/img/cancel.png">
+                        </div>
+                        <p>FAIL !</p>
+                    }
+                    @if (!string.IsNullOrEmpty(modalConfirm))
+                    {
+                        <div class="container mt-5 mb-5">
+                            <div class="row d-flex justify-content-center">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="text-left logo p-2 px-5">
+                                            <i class="bi bi-hourglass-top" style="font-weight:600; font-size:40px; color:brown"></i>
+                                        </div>
+
+                                        <div class="invoice p-5">
+                                            <h5>@modalConfirm</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="closemodal">
+                        Done
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (mode == Mode.USING_LABEL_CONFIRM)
+{
+    if (!string.IsNullOrEmpty(labelFail))
+    {
+        <div class="alert alert-danger alert-secondary fade show" role="alert">
+            <strong>FAIL !</strong> @labelFail
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    if (!string.IsNullOrEmpty(labelSuccess))
+    {
+        <div class="alert alert-success alert-secondary fade show" role="alert">
+            <strong>Success !</strong> @labelSuccess
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+    if (!string.IsNullOrEmpty(labelCheck))
+    {
+        <div class="alert alert-light" role="alert" style="opacity:0.7">
+            <h4 class="alert-heading" style="font-weight:700; color:black">Welcome to AMES</h4>
+            <p style="color:black; font-weight:600">@labelCheck</p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <hr>
+        </div>
+    }
+}
