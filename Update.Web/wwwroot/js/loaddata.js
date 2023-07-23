@@ -18,7 +18,7 @@ $(document).ready(function () {
     let district_id_default = dataUser.District;
     let school_id_default = dataUser.School;
     let school_type_default = dataUser.Class;
-    // GetCityById(city_id_default); // hiển thị tên thành phố của users*/
+    GetCityById(city_id_default); // hiển thị tên thành phố của users*/
     GetCitiesByAreaId(area_id_default); // đồng thời hiển thị list city theo area của user
 
     if (dataUser.Class == "SV") {
@@ -26,16 +26,16 @@ $(document).ready(function () {
         $("#district").prop('disabled', true);
     }
     else {
-      //GetDistrictById(district_id_default); // Hiển thị Huyện mặc định nếu là HS*/
+       GetDistrictById(district_id_default); // Hiển thị Huyện mặc định nếu là HS*/
         GetDistrictsByCityId(dataUser.City); //  Đồng thời hiện danh sách District với city hiện tại
     }
 
-     //GetSchoolById(school_id_default);*/
+    GetSchoolById(school_id_default);
     GetSchoolsByCityIdSchoolType(city_id_default, district_id_default, school_type_default);
 
     // Sau khi lựa chọn thay đổi lại khu vực thành phố
     let currentSchoolType = '';
-    let currentAreaId = 0;
+    let currentAreaId = -1;
     let currentCityId = -1;
     let currentDistrictId = -1;
     let currentSchoolId = -1;
@@ -44,18 +44,21 @@ $(document).ready(function () {
         GetCurrentId();
 
          // khi bảng thi thay đổi thì District thay đổi (hiển thị hoặc không)
-         // List 
-        // List School có sự thay đổi nên Id của nó reset vể -1        
+         // List
+        // List School có sự thay đổi nên Id của nó reset vể -1    
         if (currentSchoolType == "SV") {
             $("#district").prop('disabled', true);
             var defaultValue = '';
             $("#district").html(defaultValue);
             $('.district-error-message').html('');
+
         }
         if (currentSchoolType == "HS") {
             $("#district").prop('disabled', false);
             GetDistrictsByCityId(currentCityId);
-            ValidateDistrict(-1);
+            if (dataUser.Class != "HS") {
+                ValidateDistrict(-1);
+            }
         }
         // Get list School theo Id hiện tại (current)
         GetSchoolsByCityIdSchoolType(currentCityId, currentDistrictId, currentSchoolType);
@@ -181,12 +184,15 @@ $(document).ready(function () {
             success: function (response) {
                 var dataDistrict = localStorage.getItem("District");
                 var html_element = '';
-                if (dataDistrict && JSON.parse(dataDistrict).Id != 0) {
-                    html_element = '<option value="' + JSON.parse(dataDistrict).Id + '">' + JSON.parse(dataDistrict).Name + '</option>';
-                    if (cityId != dataUser.City) {
-                        html_element = '<option value="-1">---Chọn Quận/Huyện---</option>';
+                if (dataUser.Class == "HS") {
+                    if (JSON.parse(dataDistrict).Id != 0) {
+                        html_element = '<option value="' + JSON.parse(dataDistrict).Id + '">' + JSON.parse(dataDistrict).Name + '</option>';
+                        if (cityId != dataUser.City) {
+                            html_element = '<option value="-1">---Chọn Quận/Huyện---</option>';
+                        }
                     }
                 }
+               
                 else {
                     html_element = '<option value="-1">---Chọn Quận/Huyện---</option>';
                 }
@@ -215,7 +221,8 @@ $(document).ready(function () {
                 if (JSON.parse(dataSchool)) {
                     html_element = '<option value="' + JSON.parse(dataSchool).Id + '">' + JSON.parse(dataSchool).Name + '</option>';
                 }
-                if (schoolType != JSON.parse(dataSchool).SchoolType ||
+
+                if (schoolType != dataUser.Class ||
                     cityId != dataUser.City || districtId != dataUser.District) {
                     html_element = '<option value="-1">--- Chọn Trường ---</option>';
                 }
@@ -337,20 +344,11 @@ $(document).ready(function () {
         let bangthi = $('#bangthi').val();
         let area = $('#area').val();
         let city = $('#city').val();
-
-        if (city == -1) {  //Nếu CityI = 0 thì có nghĩa đang ở mặc định
-            city = dataUser.City;
-        }
-
         let district = $('#district').val();
-        if (district == -1) {  //Nếu district = 0 thì có nghĩa đang ở mặc định
-            district = dataUser.School;
+        if (bangthi == "SV") {  //Nếu district = 0 thì có nghĩa đang ở mặc định
+            district = 0;
         }
-
         let school = $('#school').val();
-        if (school == -1) {  //Nếu school = 0 thì có nghĩa đang ở mặc định
-            school = dataUser.School;
-        }
         let khoa = $('#inputKhoa').val();
         let lop = $('#inputLop').val();
         let id = $('.userId').val();
