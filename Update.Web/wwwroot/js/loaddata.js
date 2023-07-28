@@ -80,9 +80,7 @@ $(document).ready(function () {
 
     $("#area").on('change', function () { 
         // thay đổi area a thì City thay đổi , city thay đổi => List School thay đổi
-        currentAreaId = $('#area').val(); // set Id hien tai cua area
-        currentSchoolType = $('#bangthi').val(); // set Id school hiện tại
-        currentCityId = $('#city').val();
+        GetCurrentId();
 
         if (currentAreaId != dataUser.Area) {
             // thay đổi area thì district về mặc đinh
@@ -100,10 +98,20 @@ $(document).ready(function () {
             // nếu Area không đổi
             $('.city-error-message').html('');
             $('.school-error-message').html('');
-            $('.district-error-message').html('');
+           
             GetCitiesByAreaId(dataUser.Area, city_default); // Get list city theo id area hiện tại
+
             GetDistrictsByCityId(dataUser.City, district_default);
+                
+            $('.district-error-message').html('');
+            if (district_default == null) {
+                ValidateDistrict(-1);
+            }
+
             GetSchoolsByCityIdSchoolType(dataUser.City, dataUser.District, currentSchoolType, school_default);
+        }
+        if (currentSchoolType == "SV") {
+            $('.district-error-message').html('');
         }
         CheckTextError();
 
@@ -113,26 +121,22 @@ $(document).ready(function () {
         GetCurrentId();
 
         currentCityId = $('#city').val();
-        /*        let chooseCityIdNull = $('#city').val();*/
 
         if (currentCityId != dataUser.City) {
+             GetDistrictsByCityId(currentCityId);
 
-            //GetSchoolsByCityIdSchoolType(currentCityId, currentDistrictId, currentSchoolType);
-            //ValidateSchool(-1)
-            if (dataUser.Class == "HS") {
-                GetDistrictsByCityId(currentCityId);
-                ValidateDistrict(-1);
-                if (currentDistrictId == 0) {
+             if (currentDistrictId == 0) {
                     $('.district-error-message').html('');
-                }
-            }
+             }
 
-            GetSchoolsByCityIdSchoolType();
+            ValidateDistrict(-1);
+
+            GetSchoolsByCityIdSchoolType(currentCityId, currentDistrictId, currentSchoolType);
+            
             ValidateSchool(-1);
         }
         else {
             $('.district-error-message').html('');
-            /* $('.school-error-message').html('');*/
             GetDistrictsByCityId(dataUser.City, district_default);
             GetSchoolsByCityIdSchoolType(dataUser.City, dataUser.District, dataUser.Class, school_default);
         }
@@ -142,49 +146,38 @@ $(document).ready(function () {
 
 
     $("#district").on('change', function () {
-        currentDistrictId = $('#district').val();
-        currentSchoolType = $('#bangtin').val();
-        ValidateDistrict(currentDistrictId);
+        GetCurrentId();
+    
         if (currentDistrictId != dataUser.District) {
-            if (currentCityId == -1) {
-                currentCityId = dataUser.City;
-            }
-            GetSchoolsByCityIdSchoolType(currentCityId, currentDistrictId, currentSchoolType);
+
+            GetSchoolsByCityIdSchoolType(currentCityId, currentDistrictId, currentSchoolType);          
             ValidateSchool(-1)
         }
         else {
             $('.school-error-message').html('');
             GetSchoolsByCityIdSchoolType(dataUser.City, dataUser.District, dataUser.Class);
         }  
+        ValidateDistrict(currentDistrictId);
     });
 
     $("#school").on('change', function () {
         currentSchoolId = $('#school').val();
+        if (currentSchoolType == "SV") {
+            $('.district-error-message').html('');
+        }
         ValidateSchool(currentSchoolId);
+
         CheckTextError();
     });
 
-    
-
+   
     function GetCitiesByAreaId(areaId, object) {
         $.ajax({
             type: "GET",
             url: "/update/cities/" + areaId,
             data: "{}",
             success: function (response) {
-                //var dataCity = localStorage.getItem("City");
-                //var html_element = '';
-                //if (JSON.parse(dataCity).Id != null) {
-                //    html_element = '<option value="' + JSON.parse(dataCity).Id + '">' + JSON.parse(dataCity).Name + '</option>';
-                //}
-                //else {
-                //    html_element = '<option value="-1">---Chưa Có Thành Phố---</option>';
-                //}
-                //let currentAreaId = $("#area").val();
-                //if (currentAreaId != JSON.parse(dataCity).AreaId || response.length == 0) {
-                //    html_element = '<option value="-1">---Chọn Tỉnh/Thành Phố/Khu Vực---</option>';
-                //}
-                //$("#city").html(html_element);
+
                 if (object) {
                     GetName(object, "#city");
                 }
@@ -205,31 +198,13 @@ $(document).ready(function () {
             }
         });
     }
-
     function GetDistrictsByCityId(cityId, object) {
         $.ajax({
             type: "GET",
             url: "/update/districts/" + cityId,
             data: "{}",
             success: function (response) {
-                //var html_element = '';
-                //if (dataUser.Class == "HS") {
-                //    if (JSON.parse(dataDistrict).Id != 0) {
-                //        html_element = '<option value="' + JSON.parse(dataDistrict).Id + '">' + JSON.parse(dataDistrict).Name + '</option>';
-                //        if (currentAreaId == -1) {
-                //            currentAreaId = dataUser.Area;
-                //        }
-                //        if (cityId != dataUser.City || currentAreaId != dataUser.Area || cityId == -1)
-                //        {
-                //            html_element = '<option value="-1">---Chọn Quận/Huyện---</option>';
-                //        }
-                //    }
-                //}
 
-                //else {
-                //    html_element = '<option value="-1">---Chọn Quận/Huyện (Chưa Tồn Tại Quận Huyện)---</option>';
-                //}
-                //$("#district").html(html_element);
                 if (object) {
                     GetName(object, "#district");
                 }
@@ -261,16 +236,6 @@ $(document).ready(function () {
             data: "{}",
             success: function (response) {
                 var dataSchool = localStorage.getItem("School");
-
-                //var html_element = '';
-                //if (JSON.parse(dataSchool).Id != null) {
-                //    html_element = '<option value="' + JSON.parse(dataSchool).Id + '">' + JSON.parse(dataSchool).Name + '</option>';
-                //}
-                // if (schoolType != dataUser.Class ||
-                //    cityId != dataUser.City || districtId != dataUser.District) {
-                //    html_element = '<option value="-1">--- Chọn Trường ---</option>';
-                //}
-                /*$("#school").html(html_element);*//*$("#school").html(html_element);*/
                 if (object) {
                     GetName(object, "#school");
                 }
@@ -315,6 +280,10 @@ $(document).ready(function () {
         currentSchoolType = $('#bangthi').val()
         currentCityId = $('#city').val();
         currentDistrictId = $('#district').val();
+        if (currentSchoolType == "SV") {
+            currentDistrictId = 0;
+
+        }
         currentSchoolId = $('#school').val();
     }
 
