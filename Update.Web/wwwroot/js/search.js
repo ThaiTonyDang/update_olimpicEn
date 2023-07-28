@@ -24,6 +24,7 @@
 })
 
 function searchUserByPhone() {
+    localStorage.clear(); // xóa dữ liệu cũ
     var phoneNumber = $('.phone-number').val();
     $.ajax({
         type: "GET",
