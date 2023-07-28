@@ -24,6 +24,7 @@
 })
 
 function searchUserByPhone() {
+    localStorage.clear(); // xóa dữ liệu cũ
     var phoneNumber = $('.phone-number').val();
     $.ajax({
         type: "GET",
@@ -91,7 +92,66 @@ function GetRenderInformation(user) {
 }
 
 function SaveUserToStorage(user) {
+    GetCityById(user.City);
+    if (user.Class == "HS") {
+        GetDistrictById(user.District);
+    }
+    GetSchoolById(user.School);
     localStorage.setItem("userData", JSON.stringify(user));
 }
 
+
+function GetCityById(cityId) {
+    $.ajax({
+        type: "GET",
+        url: "/city/" + cityId,
+        data: "{}",
+        success: function (response) {
+            var html_element = '';
+            localStorage.setItem("City", JSON.stringify(response));
+            //html_element = '<option value="' + response.Id + '">' + response.Name + '</option>';
+            //$("#city").html(html_element);
+        },
+        error: function (response, status, error) {
+            var defaultValue = '<option value="-1">--- Chọn Tỉnh/Thành Phố/Khu Vực ---</option>';
+            $("#city").html(defaultValue);
+        }
+    })
+}
+
+function GetDistrictById(districtId) {
+    $.ajax({
+        type: "GET",
+        url: "/district/" + districtId,
+        data: "{}",
+        success: function (response) {
+            var html_element = '';
+            localStorage.setItem("District", JSON.stringify(response));
+            html_element = '<option value="' + response.Id + '">' + response.Name + '</option>';
+            $("#district").html(html_element);
+        },
+        error: function (response, status, error) {
+            var defaultValue = '<option value="-1">--- Chọn Quận/Huyện (Chọn Thành Phố Trước) ---</option>';
+            $("#district").html(defaultValue);
+        }
+    })
+}
+
+function GetSchoolById(schoolId) {
+    $.ajax({
+        type: "GET",
+        url: "/school/" + schoolId,
+        data: "{}",
+        success: function (response) {
+            var html_element = '';
+            localStorage.setItem("School", JSON.stringify(response));
+            html_element = '<option value="' + response.Id + '">' + response.Name + '</option>';
+            $("#school").html(html_element);
+        },
+        error: function (response, status, error) {
+            var defaultValue = '<option value="-1">--- Chọn Trường ---</option>';
+            $("#school").html(defaultValue);
+        }
+    })
+}
 
